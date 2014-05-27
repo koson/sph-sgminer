@@ -1296,6 +1296,9 @@ bool stratum_send(struct pool *pool, char *s, ssize_t len)
 {
 	enum send_ret ret = SEND_INACTIVE;
 
+	if (opt_protocol)
+		applog(LOG_DEBUG, "SEND: %s", s);
+
 	mutex_lock(&pool->stratum_lock);
 	if (pool->stratum_active)
 		ret = __stratum_send(pool, s, len);

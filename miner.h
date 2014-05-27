@@ -403,6 +403,7 @@ enum cl_kernels {
 	KL_GROESTLCOIN,
 	KL_TWECOIN,
 	KL_MARUCOIN,
+	KL_X11MOD,
 };
 
 enum dev_reason {

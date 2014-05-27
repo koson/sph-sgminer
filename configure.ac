@@ -219,6 +219,7 @@ AC_ARG_ENABLE([git-version],
 		[Disable use of git version in version string even if available]),
 		[wantgitver=$enableval], [wantgitver=yes])
 
+<<<<<<< HEAD
 AC_ARG_WITH([build_number],
 	[AC_HELP_STRING([--with-build-number], [Specify a build number.])],
 	[BUILD_NUMBER="$withval"]
@@ -226,6 +227,8 @@ AC_ARG_WITH([build_number],
 AC_SUBST([BUILD_NUMBER])
 AM_CONDITIONAL([USE_BUILD_NUMBER], [test x$BUILD_NUMBER != x])
 
+=======
+>>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 curses="auto"
 
 AC_ARG_WITH([curses],
@@ -267,7 +270,10 @@ if test "x$have_sgminer_sdk" = "xtrue"; then
 	fi
 	PKG_CONFIG="${PKG_CONFIG:-pkg-config} --define-variable=arch=$ARCH_DIR --define-variable=target=$target --define-variable=sgminersdkdir=$SGMINER_SDK"
 	PKG_CONFIG_PATH="$SGMINER_SDK/lib/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}"
+<<<<<<< HEAD
 	export PKG_CONFIG_PATH
+=======
+>>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 fi
 
 AC_ARG_ENABLE([libcurl],
@@ -366,6 +372,10 @@ AC_DEFINE_UNQUOTED([GROESTLCOIN_KERNNAME], ["groestlcoin"], [Filename for Groest
 AC_DEFINE_UNQUOTED([SIFCOIN_KERNNAME], ["sifcoin"], [Filename for Sifcoin optimised kernel])
 AC_DEFINE_UNQUOTED([TWECOIN_KERNNAME], ["twecoin"], [Filename for Twecoin optimised kernel])
 AC_DEFINE_UNQUOTED([MARUCOIN_KERNNAME], ["marucoin"], [Filename for MaruCoin optimised kernel])
+<<<<<<< HEAD
+=======
+AC_DEFINE_UNQUOTED([X11MOD_KERNNAME], ["x11mod"], [Filename for X11mod optimised kernel])
+>>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 
 AC_SUBST(OPENCL_LIBS)
 AC_SUBST(OPENCL_FLAGS)

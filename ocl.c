@@ -212,6 +212,13 @@ void patch_opcodes(char *w, unsigned remaining)
 	applog(LOG_DEBUG, "Patched a total of %i BFI_INT instructions", patched);
 }
 
+#define CL_CREATE_KERNEL(name) \
+	clState->kernel_##name = clCreateKernel(clState->program, #name, &status); \
+	if (status != CL_SUCCESS) { \
+	    applog(LOG_ERR, "Error %d: Creating Kernel from program. (clCreateKernel #name)", status); \
+	    return NULL; \
+	}
+
 _clState *initCl(unsigned int gpu, char *name, size_t nameSize)
 {
 	_clState *clState = calloc(1, sizeof(_clState));
@@ -321,8 +328,15 @@ _clState *initCl(unsigned int gpu, char *name, size_t nameSize)
 	/////////////////////////////////////////////////////////////////
 	// Create an OpenCL command queue
 	/////////////////////////////////////////////////////////////////
-	clState->commandQueue = clCreateCommandQueue(clState->context, devices[gpu],
-						     CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &status);
+        if (cgpu->kernel == KL_X11MOD)
+            clState->commandQueue = clCreateCommandQueue(clState->context, devices[gpu],
+                                                     0, &status);
+        else
+            clState->commandQueue = clCreateCommandQueue(clState->context, devices[gpu],
+                                                     CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &status);
+//	clState->commandQueue = clCreateCommandQueue(clState->context, devices[gpu],
+//						     CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE, &status);
+
 	if (status != CL_SUCCESS) /* Try again without OOE enable */
 		clState->commandQueue = clCreateCommandQueue(clState->context, devices[gpu], 0 , &status);
 	if (status != CL_SUCCESS) {
@@ -508,6 +522,11 @@ _clState *initCl(unsigned int gpu, char *name, size_t nameSize)
 			applog(LOG_WARNING, "Kernel marucoin is experimental.");
 			strcpy(filename, MARUCOIN_KERNNAME".cl");
 			strcpy(binaryfilename, MARUCOIN_KERNNAME);
+			break;
+		case KL_X11MOD:
+			applog(LOG_WARNING, "Kernel x11mod is experimental.");
+			strcpy(filename, X11MOD_KERNNAME".cl");
+			strcpy(binaryfilename, X11MOD_KERNNAME);
 			break;
 		case KL_NONE: /* Shouldn't happen */
 			break;
@@ -827,10 +846,25 @@ built:
 	}
 
 	/* get a kernel object handle for a kernel with the given name */
-	clState->kernel = clCreateKernel(clState->program, "search", &status);
-	if (status != CL_SUCCESS) {
+	if (clState->chosen_kernel == KL_X11MOD) {
+	    CL_CREATE_KERNEL(blake);
+	    CL_CREATE_KERNEL(bmw);
+	    CL_CREATE_KERNEL(groestl);
+	    CL_CREATE_KERNEL(skein);
+	    CL_CREATE_KERNEL(jh);
+	    CL_CREATE_KERNEL(keccak);
+	    CL_CREATE_KERNEL(luffa);
+	    CL_CREATE_KERNEL(cubehash);
+	    CL_CREATE_KERNEL(shavite);
+	    CL_CREATE_KERNEL(simd);
+	    CL_CREATE_KERNEL(echo);
+	}
+	else {
+	    clState->kernel = clCreateKernel(clState->program, "search", &status);
+	    if (status != CL_SUCCESS) {
 		applog(LOG_ERR, "Error %d: Creating Kernel from program. (clCreateKernel)", status);
 		return NULL;
+	    }
 	}
 
 	size_t ipt = (1024 / cgpu->lookup_gap + (1024 % cgpu->lookup_gap > 0));
@@ -861,12 +895,19 @@ built:
 		applog(LOG_ERR, "Error %d: clCreateBuffer (CLbuffer0)", status);
 		return NULL;
 	}
-	clState->outputBuffer = clCreateBuffer(clState->context, CL_MEM_WRITE_ONLY, BUFFERSIZE, NULL, &status);
 
+	clState->outputBuffer = clCreateBuffer(clState->context, CL_MEM_WRITE_ONLY, BUFFERSIZE, NULL, &status);
 	if (status != CL_SUCCESS) {
 		applog(LOG_ERR, "Error %d: clCreateBuffer (outputBuffer)", status);
 		return NULL;
 	}
+
+	clState->hash_buffer = clCreateBuffer(clState->context, CL_MEM_READ_WRITE, THASHBUFSIZE, NULL, &status);
+	if (status != CL_SUCCESS && !clState->hash_buffer) {
+		applog(LOG_ERR, "Error %d: clCreateBuffer (hash_buffer), decrease TC or increase LG", status);
+		return NULL;
+	}
+
 
 	return clState;
 }
