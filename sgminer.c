@@ -63,14 +63,11 @@ char *curly = ":D";
 	#include <sys/wait.h>
 #endif
 
-<<<<<<< HEAD
-=======
 #ifdef GIT_VERSION
 #undef VERSION
 #define VERSION GIT_VERSION
 #endif
 
->>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 struct strategies strategies[] = {
 	{ "Failover" },
 	{ "Round Robin" },
@@ -225,11 +222,7 @@ static struct pool *currentpool = NULL;
 int total_pools, enabled_pools;
 enum pool_strategy pool_strategy = POOL_FAILOVER;
 int opt_rotate_period;
-<<<<<<< HEAD
 static int total_urls, total_users, total_passes, total_userpasses, total_noextranonce;
-=======
-static int total_urls, total_users, total_passes, total_userpasses;
->>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 static int json_array_index;
 
 static
@@ -555,10 +548,7 @@ struct pool *add_pool(void)
 	pool->rpc_proxy = NULL;
 	pool->quota = 1;
 	adjust_quota_gcd();
-<<<<<<< HEAD
 	pool->extranonce_subscribe = true;
-=======
->>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 
 	return pool;
 }
@@ -929,7 +919,6 @@ static char *set_userpass(const char *arg)
 	return NULL;
 }
 
-<<<<<<< HEAD
 static char *set_no_extranonce_subscribe(char *arg)
 {
 	struct pool *pool;
@@ -945,8 +934,6 @@ static char *set_no_extranonce_subscribe(char *arg)
 	return NULL;
 }
 
-=======
->>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 static char *enable_debug(bool *flag)
 {
 	*flag = true;
@@ -1270,12 +1257,9 @@ static struct opt_table opt_config_table[] = {
 	OPT_WITHOUT_ARG("--no-submit-stale",
 			opt_set_invbool, &opt_submit_stale,
 		        "Don't submit shares if they are detected as stale"),
-<<<<<<< HEAD
 	OPT_WITHOUT_ARG("--no-extranonce-subscribe",
 			set_no_extranonce_subscribe, NULL,
 			"Disable 'extranonce' stratum subscribe"),
-=======
->>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 	OPT_WITH_ARG("--pass|-p",
 		     set_pass, NULL, NULL,
 		     "Password for bitcoin JSON-RPC server"),
@@ -2211,11 +2195,7 @@ static void curses_print_status(void)
 	struct pool *pool = current_pool();
 
 	wattron(statuswin, A_BOLD);
-<<<<<<< HEAD
 	cg_mvwprintw(statuswin, 0, 0, PACKAGE " " CGMINER_VERSION " - Started: %s", datestamp);
-=======
-	cg_mvwprintw(statuswin, 0, 0, PACKAGE " " VERSION " - Started: %s", datestamp);
->>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 	wattroff(statuswin, A_BOLD);
 	mvwhline(statuswin, 1, 0, '-', 80);
 	cg_mvwprintw(statuswin, 2, 0, "%s", statusline);
@@ -3548,7 +3528,6 @@ struct work *copy_work_noffset(struct work *base_work, int noffset)
 	return work;
 }
 
-<<<<<<< HEAD
 void pool_failed(struct pool *pool)
 {
 	if (!pool_tset(pool, &pool->idle)) {
@@ -3559,8 +3538,6 @@ void pool_failed(struct pool *pool)
 	}
 }
 
-=======
->>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 static void pool_died(struct pool *pool)
 {
 	if (!pool_tset(pool, &pool->idle)) {
@@ -4244,11 +4221,8 @@ void write_config(FILE *fcfg)
 				pool->rpc_proxy ? "|" : "",
 				json_escape(pool->rpc_url));
 		}
-<<<<<<< HEAD
 		if (!pool->extranonce_subscribe)
 			fputs("\n\t\t\"no-extranonce-subscribe\" : true,", fcfg);
-=======
->>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 		fprintf(fcfg, "\n\t\t\"user\" : \"%s\",", json_escape(pool->rpc_user));
 		fprintf(fcfg, "\n\t\t\"pass\" : \"%s\"\n\t}", json_escape(pool->rpc_pass));
 		}
@@ -4333,12 +4307,9 @@ void write_config(FILE *fcfg)
 				case KL_MARUCOIN:
 					fprintf(fcfg, MARUCOIN_KERNNAME);
 					break;
-<<<<<<< HEAD
-=======
 				case KL_X11MOD:
 					fprintf(fcfg, X11MOD_KERNNAME);
 					break;
->>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 			}
 		}
 
@@ -5421,10 +5392,7 @@ static void *stratum_rthread(void *userdata)
 			if (!restart_stratum(pool)) {
 				pool_died(pool);
 				while (!restart_stratum(pool)) {
-<<<<<<< HEAD
 					pool_failed(pool);
-=======
->>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 					if (pool->removed)
 						goto out;
 					cgsleep_ms(30000);
@@ -5465,10 +5433,7 @@ static void *stratum_rthread(void *userdata)
 
 			pool_died(pool);
 			while (!restart_stratum(pool)) {
-<<<<<<< HEAD
 				pool_failed(pool);
-=======
->>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 				if (pool->removed)
 					goto out;
 				cgsleep_ms(30000);
@@ -5683,11 +5648,7 @@ retry_stratum:
 		bool init = pool_tset(pool, &pool->stratum_init);
 
 		if (!init) {
-<<<<<<< HEAD
 			bool ret = initiate_stratum(pool) && (!pool->extranonce_subscribe || subscribe_extranonce(pool)) && auth_stratum(pool);
-=======
-			bool ret = initiate_stratum(pool) && auth_stratum(pool);
->>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 
 			if (ret)
 				init_stratum_threads(pool);
@@ -6159,10 +6120,7 @@ static void rebuild_nonce(struct work *work, uint32_t nonce)
 
 	switch (gpus[0].kernel) {
 		case KL_DARKCOIN:
-<<<<<<< HEAD
-=======
 		case KL_X11MOD:
->>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 			darkcoin_regenhash(work);
 			break;
 		case KL_QUBITCOIN:
@@ -7965,11 +7923,7 @@ int main(int argc, char *argv[])
 	/* We use the getq mutex as the staged lock */
 	stgd_lock = &getq->mutex;
 
-<<<<<<< HEAD
 	snprintf(packagename, sizeof(packagename), "%s %s", PACKAGE, CGMINER_VERSION);
-=======
-	snprintf(packagename, sizeof(packagename), "%s %s", PACKAGE, VERSION);
->>>>>>> 16fa21c77178bc95318ce10cd081c82bb2c46040
 
 	handler.sa_handler = &sighandler;
 	handler.sa_flags = 0;
